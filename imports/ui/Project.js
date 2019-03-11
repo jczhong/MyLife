@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Markdown from 'markdown-to-jsx';
 
 import { Projects } from '../api/Projects.js';
+import Item from './Item';
 
 const Desktop = styled.div`
     padding: 0.5em;
@@ -36,10 +37,18 @@ const TasksInput = styled.textarea`
     height: 37em;
 `;
 
-const TaskView = styled.div`
+const TasksView = styled.div`
+    width: 100%;
     border: 1px solid #dddddd;
     padding: 1em;
 `;
+
+const TasksContainer = styled.div`
+    display: flex;
+    flex-wrap: nowrap;
+`;
+
+const Task = styled.ul``;
 
 export default class Project extends Component {
     constructor(props) {
@@ -52,14 +61,12 @@ export default class Project extends Component {
                 title: this.project.title,
                 description: this.project.description,
                 tasks: this.project.tasks,
-                editState: true,
             };
         } else {
             this.state = {
                 title: '',
                 description: '',
                 tasks: '',
-                editState: true,
             }
         }
         this.changed = false;
@@ -70,13 +77,12 @@ export default class Project extends Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.saveChanged = this.saveChanged.bind(this);
-        this.changeTasksView = this.changeTasksView.bind(this);
         this.handleTabKeydown = this.handleTabKeydown.bind(this);
     }
 
     navBackListener(location, action) {
         if (action === 'POP' && this.changed) {
-            //FIXME
+            this.saveChanged();
         }
     }
 
@@ -119,20 +125,14 @@ export default class Project extends Component {
         event.preventDefault();
     }
 
-    changeTasksView() {
-        this.setState(prevState => ({
-            editState: !prevState.editState
-        }));
-    }
-
     handleTabKeydown(event) {
         if (event.keyCode == 9) {
             event.preventDefault();
 
             var val = this.state.tasks,
-                start =  event.target.selectionStart,
+                start = event.target.selectionStart,
                 end = event.target.selectionEnd;
-            
+
             this.setState(
                 {
                     tasks: val.substring(0, start) + '\t' + val.substring(end)
@@ -144,24 +144,10 @@ export default class Project extends Component {
         }
     }
 
-    renderTasks() {
-        if (this.state.editState) {
-            return (
-                <TasksInput type='textarea' name='tasks' ref='tasks' onChange={this.handleInputChange} onKeyDown={this.handleTabKeydown} value={this.state.tasks}></TasksInput>
-            );
-        } else {
-            return (
-                <TaskView>
-                    <Markdown>{this.state.tasks}</Markdown>
-                </TaskView>
-            );
-        }
-    }
-
     render() {
         return (
             <Desktop>
-                <form onSubmit={this.handleSubmit}>
+                <form>
                     <InputArea>
                         <MyLabel>Title: </MyLabel>
                         <TitleInput type='text' name='title' onChange={this.handleInputChange} value={this.state.title}></TitleInput>
@@ -171,13 +157,25 @@ export default class Project extends Component {
                         <DescriptionInput name='description' onChange={this.handleInputChange} value={this.state.description}></DescriptionInput>
                     </InputArea>
                     <InputArea>
-                        <MyButton onClick={this.changeTasksView}>Edit</MyButton>
-                        <MyButton onClick={this.changeTasksView}>View</MyButton>
-                        <input type='submit' value='Submit' />
+                        <MyButton onClick={this.handleSubmit}>Submit</MyButton>
                     </InputArea>
                     <InputArea>
                         <MyLabel>Tasks: </MyLabel>
-                        {this.renderTasks()}
+                        <TasksContainer>
+                            <TasksView>
+                                <TasksInput type='textarea' name='tasks' ref='tasks' onChange={this.handleInputChange} onKeyDown={this.handleTabKeydown} value={this.state.tasks}></TasksInput>
+                            </TasksView>
+                            <TasksView>
+                                <Markdown
+                                    children={this.state.tasks}
+                                    options={{
+                                        overrides: {
+                                            Task,
+                                            Item,
+                                        },
+                                }} />
+                            </TasksView>
+                        </TasksContainer>
                     </InputArea>
                 </form>
             </Desktop>

@@ -37,7 +37,6 @@ const MyToolbar = styled.div`
     margin-bottom: 0.4em;
 `;
 
-
 class Home extends Component {
     constructor(props) {
         super(props);
