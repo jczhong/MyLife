@@ -1,82 +1,125 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Container, Row, Col, CardColumns, Card, CardHeader, CardBody, CardText, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import { Projects } from '../api/Projects.js';
 
-const MyContainer = styled(Container)`
-    padding-top: 2em;
+const Desktop = styled.div`
+    padding: 0.5em;
 `;
+
+const MyTable = styled.table`
+    border-collapse: collapse;
+    width: 100%;
+`;
+
+const MyTd = styled.td`
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+`;
+
+const MyTh = styled.th`
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+`;
+
+const MyTr = styled.tr`
+    background-color: #eeeeee;
+`;
+
+const MyButton = styled.button`
+    margin-right: 0.4em;
+`;
+
+const MyToolbar = styled.div`
+    margin-bottom: 0.4em;
+`;
+
 
 class Home extends Component {
     constructor(props) {
         super(props);
 
-        this.toggle = this.toggle.bind(this);
-        this.isDropdownOpen = this.isDropdownOpen.bind(this);
         this.state = {
-            dropdownOpenId: -1
+            inEdit: false
         };
+
+        this.newProject = this.newProject.bind(this);
+        this.executeProject = this.executeProject.bind(this);
     }
 
-    toggle(id) {
-        this.setState((prevState) => {
-            if (prevState.dropdownOpenId == id) {
-                return {dropdownOpenId: -1}
-            } else {
-                return {dropdownOpenId: id}
-            }
+    newProject() {
+        let path = {
+            pathname: '/project',
+        };
+
+        this.props.history.push({
+            pathname: '/project',
+            state: "abc",
         });
     }
 
-    isDropdownOpen(id) {
-        if (this.state.dropdownOpenId == -1) {
-            return false;
+    executeProject(project) {
+        let path = {
+            pathname: '/project',
+            state: project,
+        };
+
+        this.props.history.push(path);
+    }
+
+    renderActions(project) {
+        if (project.status === 'open') {
+            return (
+                <MyTd>
+                    <MyButton onClick={() => this.executeProject(project)}>Execute</MyButton>
+                    <MyButton>Close</MyButton>
+                </MyTd>
+            );
+        } else {
+            return (
+                <MyTd>
+                    <MyButton>Open</MyButton>
+                </MyTd>
+            );
         }
-        if (this.state.dropdownOpenId == id) {
-            return true;
-        }
+    }
+
+    renderProjects() {
+        const list = this.props.projects.map((project) => {
+            return (
+                <tr key={project._id}>
+                    <MyTd>{project.title}</MyTd>
+                    <MyTd>{project.description}</MyTd>
+                    {this.renderActions(project)}
+                    <MyTd>{project.times}</MyTd>
+                </tr>
+            );
+        });
+
+        return list;
     }
 
     render() {
-        const list = this.props.projects.map((project) => {
-            return (
-                <Card key={project._id}>
-                    <CardHeader>
-                        <Container>
-                            <Row>
-                                <Col><div className='font-weight-bold '>{project.title}</div></Col>
-                                <Col>
-                                    <Dropdown isOpen={this.isDropdownOpen(project._id)} toggle={() => this.toggle(project._id)}>
-                                        <DropdownToggle>
-                                            <FontAwesomeIcon icon={faBars} />
-                                        </DropdownToggle>
-                                        <DropdownMenu>
-                                            <DropdownItem>Edit</DropdownItem>
-                                            <DropdownItem>Expand Tasks</DropdownItem>
-                                            <DropdownItem>Close</DropdownItem>
-                                            <DropdownItem>Delete</DropdownItem>
-                                        </DropdownMenu>
-                                    </Dropdown>
-                                </Col>
-                            </Row>
-                        </Container>
-                    </CardHeader>
-                    <CardBody>
-                        <CardText>{project.description}</CardText>
-                    </CardBody>
-                </Card>
-            );
-        });
         return (
-            <MyContainer>
-                <CardColumns>
-                    {list}
-                </CardColumns>
-            </MyContainer>
+            <Desktop>
+                <MyToolbar>
+                    <MyButton onClick={this.newProject}>New Project</MyButton>
+                </MyToolbar>
+                <MyTable>
+                    <tbody>
+                        <MyTr>
+                            <MyTh>Title</MyTh>
+                            <MyTh>Description</MyTh>
+                            <MyTh>Actions</MyTh>
+                            <MyTh>Times</MyTh>
+                        </MyTr>
+                        {this.renderProjects()}
+                    </tbody>
+                </MyTable>
+            </Desktop>
         );
     }
 }
