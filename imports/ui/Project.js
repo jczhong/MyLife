@@ -71,6 +71,7 @@ export default class Project extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.saveChanged = this.saveChanged.bind(this);
         this.changeTasksView = this.changeTasksView.bind(this);
+        this.handleTabKeydown = this.handleTabKeydown.bind(this);
     }
 
     navBackListener(location, action) {
@@ -124,10 +125,29 @@ export default class Project extends Component {
         }));
     }
 
+    handleTabKeydown(event) {
+        if (event.keyCode == 9) {
+            event.preventDefault();
+
+            var val = this.state.tasks,
+                start =  event.target.selectionStart,
+                end = event.target.selectionEnd;
+            
+            this.setState(
+                {
+                    tasks: val.substring(0, start) + '\t' + val.substring(end)
+                },
+                () => {
+                    this.refs.tasks.selectionStart = this.refs.tasks.selectionEnd = start + 1
+                }
+            );
+        }
+    }
+
     renderTasks() {
         if (this.state.editState) {
             return (
-                <TasksInput type='textarea' name='tasks' onChange={this.handleInputChange} value={this.state.tasks}></TasksInput>
+                <TasksInput type='textarea' name='tasks' ref='tasks' onChange={this.handleInputChange} onKeyDown={this.handleTabKeydown} value={this.state.tasks}></TasksInput>
             );
         } else {
             return (
