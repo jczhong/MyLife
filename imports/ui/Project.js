@@ -50,6 +50,8 @@ const TasksContainer = styled.div`
 
 const Task = styled.ul``;
 
+export const ProjectContext = React.createContext();
+
 export default class Project extends Component {
     constructor(props) {
         super(props);
@@ -62,12 +64,14 @@ export default class Project extends Component {
                 description: this.project.description,
                 tasks: this.project.tasks,
             };
+            this.times = this.project.times;
         } else {
             this.state = {
                 title: '',
                 description: '',
                 tasks: '',
             }
+            this.times = 0;
         }
         this.changed = false;
 
@@ -78,6 +82,7 @@ export default class Project extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.saveChanged = this.saveChanged.bind(this);
         this.handleTabKeydown = this.handleTabKeydown.bind(this);
+        this.reportTimes = this.reportTimes.bind(this);
     }
 
     navBackListener(location, action) {
@@ -99,12 +104,13 @@ export default class Project extends Component {
 
     saveChanged() {
         if (this.changed) {
-            if (this.project !== null) {
+            if (this.project !== undefined) {
                 Projects.update(this.project._id, {
                     $set: {
                         title: this.state.title,
                         description: this.state.description,
-                        tasks: this.state.tasks
+                        tasks: this.state.tasks,
+                        times: this.times
                     },
                 });
             } else {
@@ -113,7 +119,7 @@ export default class Project extends Component {
                     description: this.state.description,
                     tasks: this.state.tasks,
                     status: 'open',
-                    times: 0,
+                    times: this.times,
                     createdAt: new Date(),
                 })
             }
@@ -144,6 +150,11 @@ export default class Project extends Component {
         }
     }
 
+    reportTimes(times) {
+        this.times += times;
+        this.changed = true;
+    }
+
     render() {
         return (
             <Desktop>
@@ -166,14 +177,16 @@ export default class Project extends Component {
                                 <TasksInput type='textarea' name='tasks' ref='tasks' onChange={this.handleInputChange} onKeyDown={this.handleTabKeydown} value={this.state.tasks}></TasksInput>
                             </TasksView>
                             <TasksView>
-                                <Markdown
-                                    children={this.state.tasks}
-                                    options={{
-                                        overrides: {
-                                            Task,
-                                            Item,
-                                        },
-                                }} />
+                                <ProjectContext.Provider value={this.reportTimes}>
+                                    <Markdown
+                                        children={this.state.tasks}
+                                        options={{
+                                            overrides: {
+                                                Task,
+                                                Item,
+                                            },
+                                        }} />
+                                </ProjectContext.Provider>
                             </TasksView>
                         </TasksContainer>
                     </InputArea>
@@ -182,4 +195,3 @@ export default class Project extends Component {
         );
     }
 }
-

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 
+import { ProjectContext } from './Project';
+
 const ItemContainer = styled.div`
     display: flex;
 `;
@@ -38,6 +40,11 @@ export default class Item extends Component {
 
         if (min === 0 & sec === 0) {
             clearInterval(this.intervalHandler);
+
+            if (this.callback !== undefined) {
+                this.callback(25);
+            }
+
             this.setState({
                 execute: false,
             });
@@ -77,16 +84,25 @@ export default class Item extends Component {
     render() {
         return (
             <li>
-                <ItemContainer>
-                    <ItemContent
-                        execute={this.state.execute}
-                        close={this.props.close !== undefined ? this.props.close : false}>
-                        {this.props.value}
-                    </ItemContent>
-                    <div>
-                        {this.renderExecuteArea()}
-                    </div>
-                </ItemContainer>
+                <ProjectContext.Consumer>
+                    {(callback) => {
+                        if (this.callback === undefined && callback !== undefined) {
+                            this.callback = callback;
+                        }
+                        return (
+                            <ItemContainer>
+                                <ItemContent
+                                    execute={this.state.execute}
+                                    close={this.props.close !== undefined ? this.props.close : false}>
+                                    {this.props.value}
+                                </ItemContent>
+                                <div>
+                                    {this.renderExecuteArea()}
+                                </div>
+                            </ItemContainer>
+                        );
+                    }}
+                </ProjectContext.Consumer>
             </li>
         );
     }

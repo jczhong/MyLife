@@ -50,13 +50,8 @@ class Home extends Component {
     }
 
     newProject() {
-        let path = {
-            pathname: '/project',
-        };
-
         this.props.history.push({
             pathname: '/project',
-            state: "abc",
         });
     }
 
