@@ -50,6 +50,12 @@ const TasksContainer = styled.div`
 
 const Task = styled.ul``;
 
+const ActionArea = styled.div`
+    display: flex;
+    flex-wrap: nowrap;
+    padding-bottom: 1.0em;
+`;
+
 export const ProjectContext = React.createContext();
 
 export default class Project extends Component {
@@ -167,9 +173,10 @@ export default class Project extends Component {
                         <MyLabel>Description: </MyLabel>
                         <DescriptionInput name='description' onChange={this.handleInputChange} value={this.state.description}></DescriptionInput>
                     </InputArea>
-                    <InputArea>
+                    <ActionArea>
                         <MyButton onClick={this.handleSubmit}>Submit</MyButton>
-                    </InputArea>
+                        <div>{this.times} mins</div>
+                    </ActionArea>
                     <InputArea>
                         <MyLabel>Tasks: </MyLabel>
                         <TasksContainer>

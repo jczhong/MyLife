@@ -47,6 +47,9 @@ class Home extends Component {
 
         this.newProject = this.newProject.bind(this);
         this.executeProject = this.executeProject.bind(this);
+        this.closeProject = this.closeProject.bind(this);
+        this.openProject = this.openProject.bind(this);
+        this.deleteProject = this.deleteProject.bind(this);
     }
 
     newProject() {
@@ -64,18 +67,39 @@ class Home extends Component {
         this.props.history.push(path);
     }
 
+    closeProject(project) {
+        Projects.update(project._id, {
+            $set: {
+                status: 'close'
+            },
+        });
+    }
+
+    openProject(project) {
+        Projects.update(project._id, {
+            $set: {
+                status: 'open'
+            },
+        });
+    }
+
+    deleteProject(project) {
+        Projects.remove(project._id);
+    }
+
     renderActions(project) {
         if (project.status === 'open') {
             return (
                 <MyTd>
                     <MyButton onClick={() => this.executeProject(project)}>Execute</MyButton>
-                    <MyButton>Close</MyButton>
+                    <MyButton onClick={() => this.closeProject(project)}>Close</MyButton>
                 </MyTd>
             );
         } else {
             return (
                 <MyTd>
-                    <MyButton>Open</MyButton>
+                    <MyButton onClick={() => this.openProject(project)}>Open</MyButton>
+                    <MyButton onClick={() => this.deleteProject(project)}>Delete</MyButton>
                 </MyTd>
             );
         }
@@ -108,7 +132,7 @@ class Home extends Component {
                             <MyTh>Title</MyTh>
                             <MyTh>Description</MyTh>
                             <MyTh>Actions</MyTh>
-                            <MyTh>Times</MyTh>
+                            <MyTh>Times(mins)</MyTh>
                         </MyTr>
                         {this.renderProjects()}
                     </tbody>

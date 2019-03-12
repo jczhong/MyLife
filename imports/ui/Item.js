@@ -59,7 +59,7 @@ export default class Item extends Component {
         });
 
         //25 mins
-        this.timeGap = 1 * 60;
+        this.timeGap = 25 * 60;
 
         this.intervalHandler = setInterval(this.tick, 1000);
     }
