@@ -93,6 +93,7 @@ export default class Project extends Component {
 
     navBackListener(location, action) {
         if (action === 'POP' && this.changed) {
+            //FIXME be called twice, why?
             this.saveChanged();
         }
     }
@@ -129,6 +130,7 @@ export default class Project extends Component {
                     createdAt: new Date(),
                 })
             }
+            this.changed = false;
         }
     }
 

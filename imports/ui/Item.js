@@ -48,6 +48,7 @@ export default class Item extends Component {
             this.setState({
                 execute: false,
             });
+            alert("Time to have a reset!");
         }
 
         this.timeGap--;
