@@ -112,7 +112,7 @@ class Home extends Component {
                     <MyTd>{project.title}</MyTd>
                     <MyTd>{project.description}</MyTd>
                     {this.renderActions(project)}
-                    <MyTd>{project.times}</MyTd>
+                    <MyTd>{(project.times/60).toFixed(2)}</MyTd>
                 </tr>
             );
         });
@@ -132,7 +132,7 @@ class Home extends Component {
                             <MyTh>Title</MyTh>
                             <MyTh>Description</MyTh>
                             <MyTh>Actions</MyTh>
-                            <MyTh>Times(mins)</MyTh>
+                            <MyTh>Times(hours)</MyTh>
                         </MyTr>
                         {this.renderProjects()}
                     </tbody>

@@ -53,6 +53,7 @@ const Task = styled.ul``;
 const ActionArea = styled.div`
     display: flex;
     flex-wrap: nowrap;
+    justify-content: space-between;
     padding-bottom: 1.0em;
 `;
 
@@ -69,15 +70,15 @@ export default class Project extends Component {
                 title: this.project.title,
                 description: this.project.description,
                 tasks: this.project.tasks,
+                times: this.project.times
             };
-            this.times = this.project.times;
         } else {
             this.state = {
                 title: '',
                 description: '',
                 tasks: '',
+                times: 0
             }
-            this.times = 0;
         }
         this.changed = false;
 
@@ -117,7 +118,7 @@ export default class Project extends Component {
                         title: this.state.title,
                         description: this.state.description,
                         tasks: this.state.tasks,
-                        times: this.times
+                        times: this.state.times
                     },
                 });
             } else {
@@ -126,7 +127,7 @@ export default class Project extends Component {
                     description: this.state.description,
                     tasks: this.state.tasks,
                     status: 'open',
-                    times: this.times,
+                    times: this.state.times,
                     createdAt: new Date(),
                 })
             }
@@ -159,7 +160,9 @@ export default class Project extends Component {
     }
 
     reportTimes(times) {
-        this.times += times;
+        this.setState(prevState => ({
+            times: prevState.times + times
+        }));
         this.changed = true;
     }
 
@@ -177,7 +180,7 @@ export default class Project extends Component {
                     </InputArea>
                     <ActionArea>
                         <MyButton onClick={this.handleSubmit}>Submit</MyButton>
-                        <div>{this.times} mins</div>
+                        <div>{this.state.times} mins</div>
                     </ActionArea>
                     <InputArea>
                         <MyLabel>Tasks: </MyLabel>
