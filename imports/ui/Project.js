@@ -70,7 +70,7 @@ export default class Project extends Component {
                 title: this.project.title,
                 description: this.project.description,
                 tasks: this.project.tasks,
-                times: this.project.times
+                times: 0
             };
         } else {
             this.state = {
@@ -90,6 +90,15 @@ export default class Project extends Component {
         this.saveChanged = this.saveChanged.bind(this);
         this.handleTabKeydown = this.handleTabKeydown.bind(this);
         this.reportTimes = this.reportTimes.bind(this);
+    }
+
+    componentDidMount() {
+        Notification.requestPermission().then(
+            function(result) {
+                //I will agree with it anyway
+                console.log(result);
+            }
+        );
     }
 
     navBackListener(location, action) {
@@ -118,7 +127,7 @@ export default class Project extends Component {
                         title: this.state.title,
                         description: this.state.description,
                         tasks: this.state.tasks,
-                        times: this.state.times
+                        times: (this.state.times + this.project.times)
                     },
                 });
             } else {
@@ -164,6 +173,7 @@ export default class Project extends Component {
             times: prevState.times + times
         }));
         this.changed = true;
+        new Notification("Notice", {body: "Time to have a reset!"});
     }
 
     render() {

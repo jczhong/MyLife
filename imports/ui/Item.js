@@ -39,7 +39,7 @@ export default class Item extends Component {
         });
 
         if (min === 0 & sec === 0) {
-            clearInterval(this.intervalHandler);
+            Meteor.clearInterval(this.intervalHandler);
 
             if (this.callback !== undefined) {
                 this.callback(25);
@@ -48,7 +48,6 @@ export default class Item extends Component {
             this.setState({
                 execute: false,
             });
-            alert("Time to have a reset!");
         }
 
         this.timeGap--;
@@ -61,8 +60,9 @@ export default class Item extends Component {
 
         //25 mins
         this.timeGap = 25 * 60;
+        //this.timeGap = 10;
 
-        this.intervalHandler = setInterval(this.tick, 1000);
+        this.intervalHandler = Meteor.setInterval(this.tick, 1000);
     }
 
     renderExecuteArea() {
