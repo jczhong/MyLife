@@ -53,8 +53,12 @@ const Task = styled.ul``;
 const ActionArea = styled.div`
     display: flex;
     flex-wrap: nowrap;
-    justify-content: space-between;
     padding-bottom: 1.0em;
+`;
+
+const TimeDisplay = styled.div`
+    padding-left: 1.0em;
+    font-weight: bold;
 `;
 
 export const ProjectContext = React.createContext();
@@ -70,14 +74,18 @@ export default class Project extends Component {
                 title: this.project.title,
                 description: this.project.description,
                 tasks: this.project.tasks,
-                times: 0
+                times: 0,
+                notes: this.project.notes,
+                tasksView: true
             };
         } else {
             this.state = {
                 title: '',
                 description: '',
                 tasks: '',
-                times: 0
+                times: 0,
+                notes: '',
+                tasksView: true
             }
         }
         this.changed = false;
@@ -90,11 +98,14 @@ export default class Project extends Component {
         this.saveChanged = this.saveChanged.bind(this);
         this.handleTabKeydown = this.handleTabKeydown.bind(this);
         this.reportTimes = this.reportTimes.bind(this);
+        this.showTasksView = this.showTasksView.bind(this);
+        this.showNotesView = this.showNotesView.bind(this);
+        this.renderTasksNotesView = this.renderTasksNotesView.bind(this);
     }
 
     componentDidMount() {
         Notification.requestPermission().then(
-            function(result) {
+            function (result) {
                 //I will agree with it anyway
                 console.log(result);
             }
@@ -127,7 +138,8 @@ export default class Project extends Component {
                         title: this.state.title,
                         description: this.state.description,
                         tasks: this.state.tasks,
-                        times: (this.state.times + this.project.times)
+                        times: (this.state.times + this.project.times),
+                        notes: this.state.notes
                     },
                 });
             } else {
@@ -138,6 +150,7 @@ export default class Project extends Component {
                     status: 'open',
                     times: this.state.times,
                     createdAt: new Date(),
+                    notes: this.state.notes
                 })
             }
             this.changed = false;
@@ -173,46 +186,83 @@ export default class Project extends Component {
             times: prevState.times + times
         }));
         this.changed = true;
-        new Notification("Notice", {body: "Time to have a reset!"});
+        new Notification("Notice", { body: "Time to have a reset!" });
+    }
+
+    showTasksView() {
+        this.setState({
+            tasksView: true
+        });
+    }
+
+    showNotesView() {
+        this.setState({
+            tasksView: false
+        });
+    }
+
+    renderTasksNotesView() {
+        if (this.state.tasksView) {
+            return (
+                <React.Fragment>
+                    <MyLabel>Tasks: </MyLabel>
+                    <TasksContainer>
+                        <TasksView>
+                            <TasksInput type='textarea' name='tasks' ref='tasks' onChange={this.handleInputChange} onKeyDown={this.handleTabKeydown} value={this.state.tasks}></TasksInput>
+                        </TasksView>
+                        <TasksView>
+                            <ProjectContext.Provider value={this.reportTimes}>
+                                <Markdown
+                                    children={this.state.tasks}
+                                    options={{
+                                        overrides: {
+                                            Task,
+                                            Item,
+                                        },
+                                    }} />
+                            </ProjectContext.Provider>
+                        </TasksView>
+                    </TasksContainer>
+                </React.Fragment>
+            );
+        } else {
+            return (
+                <React.Fragment>
+                    <MyLabel>Notes: </MyLabel>
+                    <TasksContainer>
+                        <TasksView>
+                            <TasksInput type='textarea' name='notes' ref='tasks' onChange={this.handleInputChange} onKeyDown={this.handleTabKeydown} value={this.state.notes}></TasksInput>
+                        </TasksView>
+                        <TasksView>
+                            <Markdown children={this.state.notes} />
+                        </TasksView>
+                    </TasksContainer>
+
+                </React.Fragment>
+            );
+        }
     }
 
     render() {
         return (
             <Desktop>
-                <form>
-                    <InputArea>
-                        <MyLabel>Title: </MyLabel>
-                        <TitleInput type='text' name='title' onChange={this.handleInputChange} value={this.state.title}></TitleInput>
-                    </InputArea>
-                    <InputArea>
-                        <MyLabel>Description: </MyLabel>
-                        <DescriptionInput name='description' onChange={this.handleInputChange} value={this.state.description}></DescriptionInput>
-                    </InputArea>
-                    <ActionArea>
-                        <MyButton onClick={this.handleSubmit}>Submit</MyButton>
-                        <div>{this.state.times} mins</div>
-                    </ActionArea>
-                    <InputArea>
-                        <MyLabel>Tasks: </MyLabel>
-                        <TasksContainer>
-                            <TasksView>
-                                <TasksInput type='textarea' name='tasks' ref='tasks' onChange={this.handleInputChange} onKeyDown={this.handleTabKeydown} value={this.state.tasks}></TasksInput>
-                            </TasksView>
-                            <TasksView>
-                                <ProjectContext.Provider value={this.reportTimes}>
-                                    <Markdown
-                                        children={this.state.tasks}
-                                        options={{
-                                            overrides: {
-                                                Task,
-                                                Item,
-                                            },
-                                        }} />
-                                </ProjectContext.Provider>
-                            </TasksView>
-                        </TasksContainer>
-                    </InputArea>
-                </form>
+                <InputArea>
+                    <MyLabel>Title: </MyLabel>
+                    <TitleInput type='text' name='title' onChange={this.handleInputChange} value={this.state.title}></TitleInput>
+                </InputArea>
+                <InputArea>
+                    <MyLabel>Description: </MyLabel>
+                    <DescriptionInput name='description' onChange={this.handleInputChange} value={this.state.description}></DescriptionInput>
+                </InputArea>
+                <ActionArea>
+                    <MyButton onClick={this.handleSubmit}>Save</MyButton>
+                    <MyButton onClick={this.showTasksView}>Tasks</MyButton>
+                    <MyButton onClick={this.showNotesView}>Notes</MyButton>
+                    <TimeDisplay>Spend {this.state.times} mins</TimeDisplay>
+                </ActionArea>
+                <InputArea>
+                    {this.renderTasksNotesView()}
+                </InputArea>
             </Desktop>
         );
     }
