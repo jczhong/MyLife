@@ -94,7 +94,8 @@ export default class Project extends Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.saveChanged = this.saveChanged.bind(this);
-        this.handleTabKeydown = this.handleTabKeydown.bind(this);
+        this.handleTasksTabKeydown = this.handleTasksTabKeydown.bind(this);
+        this.handleNotesTabKeydown = this.handleNotesTabKeydown.bind(this);
         this.reportTimes = this.reportTimes.bind(this);
     }
 
@@ -157,7 +158,7 @@ export default class Project extends Component {
         event.preventDefault();
     }
 
-    handleTabKeydown(event) {
+    handleTasksTabKeydown(event) {
         if (event.keyCode == 9) {
             event.preventDefault();
 
@@ -171,6 +172,25 @@ export default class Project extends Component {
                 },
                 () => {
                     this.refs.tasks.selectionStart = this.refs.tasks.selectionEnd = start + 1
+                }
+            );
+        }
+    }
+
+    handleNotesTabKeydown(event) {
+        if (event.keyCode == 9) {
+            event.preventDefault();
+
+            var val = this.state.notes,
+                start = event.target.selectionStart,
+                end = event.target.selectionEnd;
+
+            this.setState(
+                {
+                    notes: val.substring(0, start) + '\t' + val.substring(end)
+                },
+                () => {
+                    this.refs.notes.selectionStart = this.refs.notes.selectionEnd = start + 1
                 }
             );
         }
@@ -203,7 +223,7 @@ export default class Project extends Component {
                     <MyLabel>Tasks: </MyLabel>
                     <TasksContainer>
                         <TasksView>
-                            <TasksInput type='textarea' name='tasks' ref='tasks' onChange={this.handleInputChange} onKeyDown={this.handleTabKeydown} value={this.state.tasks}></TasksInput>
+                            <TasksInput type='textarea' name='tasks' ref='tasks' onChange={this.handleInputChange} onKeyDown={this.handleTasksTabKeydown} value={this.state.tasks}></TasksInput>
                         </TasksView>
                         <TasksView>
                             <ProjectContext.Provider value={this.reportTimes}>
@@ -223,7 +243,7 @@ export default class Project extends Component {
                     <MyLabel>Notes: </MyLabel>
                     <TasksContainer>
                         <TasksView>
-                            <TasksInput type='textarea' name='notes' ref='tasks' onChange={this.handleInputChange} onKeyDown={this.handleTabKeydown} value={this.state.notes}></TasksInput>
+                            <TasksInput type='textarea' name='notes' ref='notes' onChange={this.handleInputChange} onKeyDown={this.handleNotesTabKeydown} value={this.state.notes}></TasksInput>
                         </TasksView>
                         <TasksView>
                             <Markdown children={this.state.notes} />
