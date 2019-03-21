@@ -76,7 +76,6 @@ export default class Project extends Component {
                 tasks: this.project.tasks,
                 times: 0,
                 notes: this.project.notes,
-                tasksView: true
             };
         } else {
             this.state = {
@@ -85,7 +84,6 @@ export default class Project extends Component {
                 tasks: '',
                 times: 0,
                 notes: '',
-                tasksView: true
             }
         }
         this.changed = false;
@@ -98,9 +96,6 @@ export default class Project extends Component {
         this.saveChanged = this.saveChanged.bind(this);
         this.handleTabKeydown = this.handleTabKeydown.bind(this);
         this.reportTimes = this.reportTimes.bind(this);
-        this.showTasksView = this.showTasksView.bind(this);
-        this.showNotesView = this.showNotesView.bind(this);
-        this.renderTasksNotesView = this.renderTasksNotesView.bind(this);
     }
 
     componentDidMount() {
@@ -189,22 +184,22 @@ export default class Project extends Component {
         new Notification("Notice", { body: "Time to have a reset!" });
     }
 
-    showTasksView() {
-        this.setState({
-            tasksView: true
-        });
-    }
-
-    showNotesView() {
-        this.setState({
-            tasksView: false
-        });
-    }
-
-    renderTasksNotesView() {
-        if (this.state.tasksView) {
-            return (
-                <React.Fragment>
+    render() {
+        return (
+            <Desktop>
+                <InputArea>
+                    <MyLabel>Title: </MyLabel>
+                    <TitleInput type='text' name='title' onChange={this.handleInputChange} value={this.state.title}></TitleInput>
+                </InputArea>
+                <InputArea>
+                    <MyLabel>Description: </MyLabel>
+                    <DescriptionInput name='description' onChange={this.handleInputChange} value={this.state.description}></DescriptionInput>
+                </InputArea>
+                <ActionArea>
+                    <MyButton onClick={this.handleSubmit}>Save</MyButton>
+                    <TimeDisplay>Spend {this.state.times} mins</TimeDisplay>
+                </ActionArea>
+                <InputArea>
                     <MyLabel>Tasks: </MyLabel>
                     <TasksContainer>
                         <TasksView>
@@ -223,11 +218,8 @@ export default class Project extends Component {
                             </ProjectContext.Provider>
                         </TasksView>
                     </TasksContainer>
-                </React.Fragment>
-            );
-        } else {
-            return (
-                <React.Fragment>
+                </InputArea>
+                <InputArea>
                     <MyLabel>Notes: </MyLabel>
                     <TasksContainer>
                         <TasksView>
@@ -237,31 +229,6 @@ export default class Project extends Component {
                             <Markdown children={this.state.notes} />
                         </TasksView>
                     </TasksContainer>
-
-                </React.Fragment>
-            );
-        }
-    }
-
-    render() {
-        return (
-            <Desktop>
-                <InputArea>
-                    <MyLabel>Title: </MyLabel>
-                    <TitleInput type='text' name='title' onChange={this.handleInputChange} value={this.state.title}></TitleInput>
-                </InputArea>
-                <InputArea>
-                    <MyLabel>Description: </MyLabel>
-                    <DescriptionInput name='description' onChange={this.handleInputChange} value={this.state.description}></DescriptionInput>
-                </InputArea>
-                <ActionArea>
-                    <MyButton onClick={this.handleSubmit}>Save</MyButton>
-                    <MyButton onClick={this.showTasksView}>Tasks</MyButton>
-                    <MyButton onClick={this.showNotesView}>Notes</MyButton>
-                    <TimeDisplay>Spend {this.state.times} mins</TimeDisplay>
-                </ActionArea>
-                <InputArea>
-                    {this.renderTasksNotesView()}
                 </InputArea>
             </Desktop>
         );
