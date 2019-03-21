@@ -48,8 +48,6 @@ const TasksContainer = styled.div`
     flex-wrap: nowrap;
 `;
 
-const Task = styled.ul``;
-
 const ActionArea = styled.div`
     display: flex;
     flex-wrap: nowrap;
@@ -231,7 +229,6 @@ export default class Project extends Component {
                                     children={this.state.tasks}
                                     options={{
                                         overrides: {
-                                            Task,
                                             Item,
                                         },
                                     }} />

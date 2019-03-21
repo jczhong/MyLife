@@ -84,7 +84,7 @@ export default class Item extends Component {
     }
     render() {
         return (
-            <li>
+            <React.Fragment>
                 <ProjectContext.Consumer>
                     {(callback) => {
                         if (this.callback === undefined && callback !== undefined) {
@@ -104,7 +104,7 @@ export default class Item extends Component {
                         );
                     }}
                 </ProjectContext.Consumer>
-            </li>
+            </React.Fragment>
         );
     }
 }
