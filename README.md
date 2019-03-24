@@ -13,9 +13,8 @@ a personal tasks managment tool
 ## Custom markdown syntax
 
     //Create a task
-    <Task>
-      <Item value='Do sub task1 close/>
-      <Item value='Do sub task2' />
-    </Task>
+    - <Item value='Do task1' close/>
+        - <Item value='Do sub task1' />
+    - <Item value='Do task2' />
  
  try and see what would happen.
