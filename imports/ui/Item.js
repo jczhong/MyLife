@@ -13,6 +13,10 @@ const ItemContent = styled.div`
     text-decoration: ${props => props.close ? 'line-through' : 'none'};
 `;
 
+const ItemMR = styled.div`
+    margin-right: 0.4em;
+`;
+
 export default class Item extends Component {
     //props: value, close
     constructor(props) {
@@ -27,6 +31,7 @@ export default class Item extends Component {
         this.executeItem = this.executeItem.bind(this);
         this.tick = this.tick.bind(this);
         this.renderExecuteArea = this.renderExecuteArea.bind(this);
+        this.cancelExecute = this.cancelExecute.bind(this);
     }
 
     tick() {
@@ -65,10 +70,25 @@ export default class Item extends Component {
         this.intervalHandler = Meteor.setInterval(this.tick, 1000);
     }
 
+    cancelExecute() {
+        Meteor.clearInterval(this.intervalHandler);
+
+        if (this.callback !== undefined) {
+            this.callback(25 - Math.round(this.timeGap/60));
+        }
+
+        this.setState({
+            execute: false,
+        });
+    }
+
     renderExecuteArea() {
         if (this.state.execute) {
             return (
-                <div>{this.state.mins}:{this.state.secs}</div>
+                <React.Fragment>
+                    <ItemMR>{this.state.mins}:{this.state.secs}</ItemMR>
+                    <button onClick={this.cancelExecute}>Cancel</button>
+                </React.Fragment>
             );
         } else {
             if (this.props.close) {
@@ -97,9 +117,9 @@ export default class Item extends Component {
                                     close={this.props.close !== undefined ? this.props.close : false}>
                                     {this.props.value}
                                 </ItemContent>
-                                <div>
+                                <ItemContainer>
                                     {this.renderExecuteArea()}
-                                </div>
+                                </ItemContainer>
                             </ItemContainer>
                         );
                     }}
